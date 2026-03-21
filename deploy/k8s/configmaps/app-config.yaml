@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shopkuber-config
+  namespace: shopkuber
+data:
+  AUTH_PORT: "8081"
+  CATALOG_PORT: "8082"
+  ORDERS_PORT: "8083"
+  SELLER_PORT: "8084"
+  REVIEWS_PORT: "8085"
+
+  AUTH_JWT_ACCESS_TTL: "15m"
+  AUTH_JWT_REFRESH_TTL: "720h"
+  AUTH_JWT_PRIVATE_KEY_PATH: "/keys/private.pem"
+  AUTH_JWT_PUBLIC_KEY_PATH: "/keys/public.pem"
+
+  CATALOG_JWT_PUBLIC_KEY_PATH: "/keys/public.pem"
+  ORDERS_JWT_PUBLIC_KEY_PATH: "/keys/public.pem"
+  SELLER_JWT_PUBLIC_KEY_PATH: "/keys/public.pem"
+  REVIEWS_JWT_PUBLIC_KEY_PATH: "/keys/public.pem"
+
+  ORDERS_CATALOG_URL: "http://catalog-svc:8082"
+  REVIEWS_ORDERS_URL: "http://orders-svc:8083"
+  REVIEWS_CATALOG_URL: "http://catalog-svc:8082"
+  SELLER_AUTH_URL: "http://auth-svc:8081"
+
+  REVIEWS_PAYMENT_PROVIDER: "mock"

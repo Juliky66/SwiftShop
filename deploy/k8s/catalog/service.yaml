@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-svc
+  namespace: shopkuber
+spec:
+  selector:
+    app: catalog
+  ports:
+    - port: 8082
+      targetPort: 8082

@@ -1,0 +1,128 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: shopkuber
+      POSTGRES_USER: shopkuber
+      POSTGRES_PASSWORD: shopkuber
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shopkuber -d shopkuber"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  migrate:
+    image: migrate/migrate:v4.18.1
+    volumes:
+      - ../migrations:/migrations
+    command:
+      - "-path=/migrations"
+      - "-database=postgres://shopkuber:shopkuber@postgres:5432/shopkuber?sslmode=disable"
+      - "up"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  auth:
+    build:
+      context: ..
+      dockerfile: services/auth/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      AUTH_PORT: "8081"
+      AUTH_DB_DSN: "postgres://shopkuber:shopkuber@postgres:5432/shopkuber?sslmode=disable"
+      AUTH_JWT_PRIVATE_KEY_PATH: /keys/private.pem
+      AUTH_JWT_PUBLIC_KEY_PATH: /keys/public.pem
+      AUTH_JWT_ACCESS_TTL: "15m"
+      AUTH_JWT_REFRESH_TTL: "720h"
+    volumes:
+      - ../keys:/keys:ro
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  catalog:
+    build:
+      context: ..
+      dockerfile: services/catalog/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8082:8082"
+    environment:
+      CATALOG_PORT: "8082"
+      CATALOG_DB_DSN: "postgres://shopkuber:shopkuber@postgres:5432/shopkuber?sslmode=disable"
+      CATALOG_JWT_PUBLIC_KEY_PATH: /keys/public.pem
+    volumes:
+      - ../keys:/keys:ro
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  orders:
+    build:
+      context: ..
+      dockerfile: services/orders/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8083:8083"
+    environment:
+      ORDERS_PORT: "8083"
+      ORDERS_DB_DSN: "postgres://shopkuber:shopkuber@postgres:5432/shopkuber?sslmode=disable"
+      ORDERS_JWT_PUBLIC_KEY_PATH: /keys/public.pem
+      ORDERS_CATALOG_URL: "http://catalog:8082"
+    volumes:
+      - ../keys:/keys:ro
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  seller:
+    build:
+      context: ..
+      dockerfile: services/seller/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8084:8084"
+    environment:
+      SELLER_PORT: "8084"
+      SELLER_DB_DSN: "postgres://shopkuber:shopkuber@postgres:5432/shopkuber?sslmode=disable"
+      SELLER_JWT_PUBLIC_KEY_PATH: /keys/public.pem
+      SELLER_AUTH_URL: "http://auth:8081"
+    volumes:
+      - ../keys:/keys:ro
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  reviews:
+    build:
+      context: ..
+      dockerfile: services/reviews/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8085:8085"
+    environment:
+      REVIEWS_PORT: "8085"
+      REVIEWS_DB_DSN: "postgres://shopkuber:shopkuber@postgres:5432/shopkuber?sslmode=disable"
+      REVIEWS_JWT_PUBLIC_KEY_PATH: /keys/public.pem
+      REVIEWS_ORDERS_URL: "http://orders:8083"
+      REVIEWS_CATALOG_URL: "http://catalog:8082"
+      REVIEWS_PAYMENT_PROVIDER: "mock"
+      REVIEWS_PAYMENT_WEBHOOK_SECRET: "changeme"
+    volumes:
+      - ../keys:/keys:ro
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  pg_data:

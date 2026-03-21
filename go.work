@@ -1,0 +1,10 @@
+go 1.23.0
+
+use (
+	./services/auth
+	./services/catalog
+	./services/orders
+	./services/reviews
+	./services/seller
+	./shared
+)

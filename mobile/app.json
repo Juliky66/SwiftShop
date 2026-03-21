@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "ShopKuber",
+    "slug": "shopkuber",
+    "version": "1.0.0",
+    "scheme": "shopkuber",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.shopkuber.app"
+    },
+    "android": {
+      "package": "com.shopkuber.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#7C3AED"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-asset"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
