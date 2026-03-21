@@ -1,4 +1,4 @@
-# ShopKuber
+# SwiftShop
 
 Маркетплейс в стиле Wildberries на Go микросервисах + React Native (Expo).
 
