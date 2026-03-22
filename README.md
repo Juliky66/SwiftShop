@@ -175,3 +175,10 @@ cp .env.example .env
 | `DB_DSN` | `postgres://shopkuber:shopkuber@localhost:5432/shopkuber` | Строка подключения к PostgreSQL |
 | `AUTH_JWT_ACCESS_TTL` | `15m` | Время жизни access токена |
 | `AUTH_JWT_REFRESH_TTL` | `720h` | Время жизни refresh токена |
+
+
+
+
+https://github.com/user-attachments/assets/442c14a8-b956-4ee0-a899-fe132320114b
+
+
